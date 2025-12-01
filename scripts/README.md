@@ -4,42 +4,86 @@ This directory contains automation scripts for the project.
 
 ## Available Scripts
 
-### `release.py` - Automated Release Process
+### `release.py` - Automated Release Process with Conventional Commits
 
-Automates the process of releasing a new version of `fastapi-vite-assets` to PyPI.
+Automates the process of releasing a new version of `fastapi-vite-assets` to PyPI using **Conventional Commits** for automatic version detection and changelog generation.
 
-**Usage:**
+**Basic Usage:**
 
 ```bash
-# Stage changes only (default - recommended)
-uv run scripts/release.py 0.2.0
+# Auto-detect version from commits, stage changes only (recommended)
+uv run scripts/release.py
 
-# Stage and commit changes
-uv run scripts/release.py 0.2.0 --commit
+# Preview what would happen without making changes
+uv run scripts/release.py --dry-run
+
+# Auto-detect version and commit automatically
+uv run scripts/release.py --commit
+
+# Override version manually if needed
+uv run scripts/release.py --version 1.0.0
 ```
 
 **What it does:**
 
-1. ✅ Validates version format (MAJOR.MINOR.PATCH)
-2. 📝 Updates version in `pyproject.toml`
-3. 🧪 Runs all tests (`pytest`)
-4. 📦 Builds the package (`uv build`)
-5. 📋 Stages the version change
-6. 💾 Optionally commits (with `--commit` flag)
+1. 📊 **Analyzes commits** since last release using Commitizen
+2. 📝 **Auto-determines version bump** based on commit types:
+   - `feat:` commits → Minor version bump (0.1.0 → 0.2.0)
+   - `fix:` commits → Patch version bump (0.1.0 → 0.1.1)
+   - `feat!:` or `BREAKING CHANGE:` → Major version bump (0.1.0 → 1.0.0)
+3. 📜 **Updates CHANGELOG.md** automatically from commit messages
+4. 📝 Updates version in `pyproject.toml`
+5. 🧪 Runs all tests (`pytest`)
+6. 📦 Builds the package (`uv build`)
+7. 📋 Stages changes (pyproject.toml + CHANGELOG.md)
+8. 💾 Optionally commits (with `--commit` flag)
+9. 📋 Shows changelog preview and next steps
 
 **Features:**
 
+- **Automatic versioning**: No need to manually specify version number
+- **Changelog generation**: Automatically generated from conventional commit messages
 - **Safe default**: Stages changes but doesn't commit, giving you a chance to review
-- **Validation**: Ensures version follows semantic versioning
-- **Rollback**: Automatically reverts changes if tests or build fail
+- **Dry-run mode**: Preview changes without modifying files
+- **Manual override**: Can still specify exact version with `--version` flag
 - **Clear output**: Step-by-step status messages for each operation
 - **Flexible**: Use `--commit` flag when you're confident
+
+**Conventional Commit Format:**
+
+When making commits, use this format for automatic versioning:
+
+```bash
+# Features (minor version bump)
+git commit -m "feat(config): add custom Vite port support"
+
+# Bug fixes (patch version bump)
+git commit -m "fix: handle missing manifest file gracefully"
+
+# Breaking changes (major version bump)
+git commit -m "feat!: redesign configuration API"
+
+# Other types (no version bump)
+git commit -m "docs: update installation instructions"
+git commit -m "chore: update dependencies"
+```
+
+**Interactive Commit Helper:**
+
+Use Commitizen's interactive prompt for guidance:
+
+```bash
+git add .
+uv run cz commit
+# Follow the interactive prompts
+```
 
 **Requirements:**
 
 - Python 3.10+
 - `uv` package manager
 - Git repository with write access
+- Conventional commit messages for automatic versioning
 
 **After running:**
 

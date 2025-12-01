@@ -35,11 +35,9 @@ jobs:
           python-version: '3.13'
 
       - name: Build package
-        run: |
-          cd packages/fastapi-vite-assets
-          uv build
+        run: uv build --package fastapi-vite-assets
 
       - name: Publish to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
-          packages-dir: packages/fastapi-vite-assets/dist/
+          packages-dir: dist/

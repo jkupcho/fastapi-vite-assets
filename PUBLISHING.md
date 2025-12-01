@@ -8,34 +8,25 @@ This guide explains how to publish the `fastapi-vite-assets` package to PyPI.
 
 ## Publishing Workflow
 
-### Publishing a New Release
+### Publishing a New Release (Recommended - Automated)
 
-1. **Run Pre-release Checklist** (see below)
+The easiest way to create a release using the automated script (see "Quick Release" section below):
 
-2. **Update Version Number**:
-
+1. **Make conventional commits** as you develop:
    ```bash
-   # Edit packages/fastapi-vite-assets/pyproject.toml
-   # Change version = "0.1.0" to your new version (e.g., "0.2.0")
-
-   # Note: __version__ in __init__.py automatically reads from pyproject.toml
+   git commit -m "feat: add new feature"
+   git commit -m "fix: resolve bug"
    ```
 
-3. **Update Changelog** (if you have one):
-
+2. **Run the release script**:
    ```bash
-   # Document changes in CHANGELOG.md
-   ```
-
-4. **Commit and Push**:
-
-   ```bash
-   git add packages/fastapi-vite-assets/pyproject.toml
-   git commit -m "chore: bump version to 0.2.0"
+   uv run scripts/release.py          # Preview & stage
+   git diff --staged                  # Review changes
+   git commit -m "chore(release): version X.Y.Z"
    git push
    ```
 
-5. **Create GitHub Release**:
+3. **Create GitHub Release**:
 
    - Go to your repository on GitHub
    - Click "Releases" → "Create a new release"
@@ -96,27 +87,81 @@ Checklist:
 - [ ] Changes documented (CHANGELOG.md or release notes)
 - [ ] All changes committed and pushed
 
-## Quick Release (Automated Script)
+## Quick Release (Automated Script with Conventional Commits)
 
-Use the automated release script:
+The project uses **Conventional Commits** to automatically determine version bumps and generate changelogs.
+
+### Basic Usage
 
 ```bash
-# Run from project root (recommended - stages changes only)
-uv run scripts/release.py 0.2.0
+# Run from project root (auto-detects version from commits)
+uv run scripts/release.py
 
-# Or commit automatically if you're confident
-uv run scripts/release.py 0.2.0 --commit
+# Preview what would happen without making changes
+uv run scripts/release.py --dry-run
+
+# Auto-commit if you're confident
+uv run scripts/release.py --commit
+
+# Override version manually if needed
+uv run scripts/release.py --version 1.0.0
 ```
 
-The script will:
-1. ✅ Update version in `pyproject.toml`
-2. 🧪 Run all tests
-3. 📦 Build the package
-4. 📋 Stage changes for review
-5. 💾 Optionally commit (with `--commit` flag)
-6. 📋 Display next steps
+### How It Works
+
+The script:
+1. 📊 **Analyzes commits** since last release using Commitizen
+2. 📝 **Auto-determines version bump**:
+   - `feat:` commits → Minor version bump (0.1.0 → 0.2.0)
+   - `fix:` commits → Patch version bump (0.1.0 → 0.1.1)
+   - `feat!:` or `BREAKING CHANGE:` → Major version bump (0.1.0 → 1.0.0)
+3. 📜 **Generates CHANGELOG.md** automatically from commit messages
+4. 🧪 Runs all tests
+5. 📦 Builds the package
+6. 📋 Stages changes (pyproject.toml + CHANGELOG.md)
+7. 💾 Optionally commits (with `--commit` flag)
+8. 📋 Shows changelog preview and next steps
 
 **Default behavior**: Changes are staged but not committed, so you can review with `git diff --staged` before committing.
+
+### Conventional Commit Format
+
+When making commits, use this format:
+
+```
+<type>(<scope>): <subject>
+
+[optional body]
+
+[optional footer]
+```
+
+**Common types:**
+- `feat`: New feature (minor version bump)
+- `fix`: Bug fix (patch version bump)
+- `docs`: Documentation changes (no version bump)
+- `chore`: Maintenance tasks (no version bump)
+- `refactor`: Code refactoring (no version bump)
+- `test`: Adding tests (no version bump)
+- `perf`: Performance improvements (patch version bump)
+
+**Examples:**
+```bash
+git commit -m "feat(config): add support for custom Vite port"
+git commit -m "fix: handle missing manifest file gracefully"
+git commit -m "docs: update installation instructions"
+git commit -m "feat!: redesign configuration API" # Breaking change = major bump
+```
+
+### Interactive Commit Helper
+
+Use Commitizen's interactive prompt for guidance:
+
+```bash
+git add .
+uv run cz commit
+# Follow the interactive prompts
+```
 
 ## Manual Release Command
 
