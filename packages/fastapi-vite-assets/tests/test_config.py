@@ -1,9 +1,6 @@
 """Tests for ViteConfig."""
 
-import os
 from pathlib import Path
-
-import pytest
 
 from fastapi_vite_assets.config import ViteConfig
 
