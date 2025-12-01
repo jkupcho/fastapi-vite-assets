@@ -85,13 +85,15 @@ Usage in FastAPI:
 ```python
 from fastapi_vite_assets import ViteConfig, setup_vite
 
+# Simple configuration - manifest_path is auto-derived
 vite_config = ViteConfig(
     assets_path="web/dist",
-    manifest_path="web/dist/.vite/manifest.json",
-    base_path=BASE_DIR.parent,
+    base_path=BASE_DIR.parent,  # BASE_DIR = Path(__file__).resolve().parent
 )
 setup_vite(app, templates, vite_config)
 ```
+
+The `manifest_path` is automatically derived as `{assets_path}/.vite/manifest.json`.
 
 Template usage:
 
@@ -122,7 +124,8 @@ export default defineConfig({
 
 ```bash
 # From workspace root
-uv sync
+# IMPORTANT: Use --all-extras to install test, linting, and formatting dependencies
+uv sync --all-extras
 
 # Install frontend dependencies
 cd packages/example/web
@@ -215,7 +218,11 @@ base_path = /workspace/packages/example
 ### UV Commands
 
 ```bash
-# Sync all workspace dependencies
+# Sync all workspace dependencies (including test/lint/format tools)
+# IMPORTANT: Use --all-extras for development to get pytest, ruff, etc.
+uv sync --all-extras
+
+# Sync without extras (minimal install, for production)
 uv sync
 
 # Add a dependency to a specific package
@@ -224,6 +231,14 @@ uv add package-name
 
 # Run a command with uv
 uv run fastapi dev app/main.py
+
+# Run tests (requires --all-extras)
+cd packages/fastapi-vite-assets
+uv run pytest
+
+# Run linters/formatters (requires --all-extras)
+uv run ruff check
+uv run ruff format
 ```
 
 ### Vite Commands

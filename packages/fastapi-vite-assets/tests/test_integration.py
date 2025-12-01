@@ -34,6 +34,7 @@ class TestIntegration:
         config = ViteConfig(
             base_path=tmp_path,
             force_dev_mode=True,
+            validate_on_setup=False,  # Skip validation for this test
         )
 
         setup_vite(app, templates, config)
@@ -158,3 +159,77 @@ class TestIntegration:
         result = template.render()
 
         assert "/assets/assets/main-D2jVR6rk.js" in result
+
+    def test_validation_warns_missing_assets(
+        self, app, templates, tmp_path, monkeypatch, caplog
+    ):
+        """Test that validation warns about missing assets in production."""
+        import logging
+
+        caplog.set_level(logging.WARNING)
+        monkeypatch.setenv("ENV", "production")
+
+        config = ViteConfig(
+            assets_path="nonexistent",
+            base_path=tmp_path,
+            validate_on_setup=True,
+        )
+
+        setup_vite(app, templates, config)
+
+        # Check that warning was logged
+        assert any(
+            "Assets directory not found" in record.message for record in caplog.records
+        )
+
+    def test_strict_mode_raises_on_missing_assets(
+        self, app, templates, tmp_path, monkeypatch
+    ):
+        """Test that strict mode raises exception for missing assets."""
+        monkeypatch.setenv("ENV", "production")
+
+        config = ViteConfig(
+            assets_path="nonexistent",
+            base_path=tmp_path,
+            strict_mode=True,
+        )
+
+        with pytest.raises(ValueError, match="Vite configuration error"):
+            setup_vite(app, templates, config)
+
+    def test_validation_skipped_in_dev_mode(
+        self, app, templates, tmp_path, monkeypatch, caplog
+    ):
+        """Test that validation is skipped in development mode."""
+        import logging
+
+        caplog.set_level(logging.WARNING)
+        monkeypatch.setenv("ENV", "development")
+
+        config = ViteConfig(
+            assets_path="nonexistent",
+            base_path=tmp_path,
+            validate_on_setup=True,
+        )
+
+        setup_vite(app, templates, config)
+
+        # No warnings should be logged in dev mode
+        assert not any(
+            "Assets directory not found" in record.message for record in caplog.records
+        )
+
+    def test_auto_derived_manifest_path(self, app, templates, tmp_path):
+        """Test that manifest_path is auto-derived from assets_path."""
+        config = ViteConfig(
+            assets_path="web/dist",
+            base_path=tmp_path,
+            force_dev_mode=True,
+            validate_on_setup=False,
+        )
+
+        assert config.manifest_path == "web/dist/.vite/manifest.json"
+        setup_vite(app, templates, config)
+
+        # Should work without explicit manifest_path
+        assert "vite_asset" in templates.env.globals

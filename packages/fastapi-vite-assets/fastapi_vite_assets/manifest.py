@@ -4,6 +4,8 @@ import json
 from pathlib import Path
 from typing import Dict, Optional
 
+from .logger import logger
+
 
 class ViteManifest:
     """Handles reading and parsing the Vite manifest file."""
@@ -24,12 +26,29 @@ class ViteManifest:
             Dictionary containing the manifest data, or empty dict if file doesn't exist
         """
         if not self.manifest_path.exists():
+            logger.debug(
+                f"Manifest file not found: {self.manifest_path}. "
+                f"Returning empty manifest (OK in development mode)."
+            )
             return {}
 
-        with open(self.manifest_path, "r") as f:
-            self._manifest = json.load(f)
+        try:
+            with open(self.manifest_path, "r") as f:
+                self._manifest = json.load(f)
 
-        return self._manifest
+            entry_count = len(self._manifest) if self._manifest else 0
+            logger.debug(
+                f"Loaded manifest with {entry_count} entries from {self.manifest_path}"
+            )
+
+            return self._manifest
+
+        except json.JSONDecodeError as e:
+            logger.error(
+                f"Failed to parse manifest at {self.manifest_path}: {e}. "
+                f"Returning empty manifest."
+            )
+            return {}
 
     def get_chunk(self, entry: str) -> Optional[Dict]:
         """Get a specific chunk from the manifest.

@@ -165,3 +165,18 @@ class TestViteTemplateHelpers:
         assert isinstance(asset_result, Markup)
         assert "/@vite/client" in str(hmr_result)
         assert "src/main.ts" in str(asset_result)
+
+    def test_missing_asset_logs_warning(self, prod_config, caplog):
+        """Test that missing assets in production log warnings."""
+        import logging
+
+        caplog.set_level(logging.WARNING)
+        helpers = ViteTemplateHelpers(prod_config)
+        result = helpers.vite_asset("src/nonexistent.ts")
+
+        assert str(result) == ""
+        assert any(
+            "Asset 'src/nonexistent.ts' not found" in record.message
+            for record in caplog.records
+        )
+        assert any("vite.config.ts" in record.message for record in caplog.records)

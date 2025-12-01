@@ -12,7 +12,7 @@ RUN npm ci
 # Copy web source files
 COPY packages/example/web/ ./
 
-# Build Vite assets
+# Build Vite assets (creates dist/ with manifest.json)
 RUN npm run build
 
 
@@ -46,14 +46,16 @@ WORKDIR /workspace
 # Copy virtual environment from builder
 COPY --from=builder /workspace/.venv /workspace/.venv
 
-# Copy fastapi-vite-assets library source
+# Copy fastapi-vite-assets library source (workspace dependency)
 COPY packages/fastapi-vite-assets /workspace/packages/fastapi-vite-assets
 
 # Copy application code
 COPY packages/example/app /workspace/packages/example/app
 
 # Copy built Vite assets from vite-builder
-COPY --from=vite-builder /app/dist /workspace/packages/example/web/dist
+# This matches the ViteConfig: assets_path="assets", base_path=BASE_DIR.parent
+# Final path: /workspace/packages/example/assets/.vite/manifest.json
+COPY --from=vite-builder /app/dist /workspace/packages/example/assets
 
 # Expose port
 EXPOSE 8000

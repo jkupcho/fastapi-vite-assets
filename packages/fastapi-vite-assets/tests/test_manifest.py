@@ -69,3 +69,45 @@ class TestViteManifest:
 
         assert chunk is not None
         assert chunk["file"] == "assets/style-tzKEmwoM.css"
+
+    def test_load_logs_missing_file(self, tmp_path, caplog):
+        """Test that loading missing file logs debug message."""
+        import logging
+
+        caplog.set_level(logging.DEBUG)
+        manifest = ViteManifest(tmp_path / "nonexistent.json")
+        data = manifest.load()
+
+        assert data == {}
+        assert any(
+            "Manifest file not found" in record.message for record in caplog.records
+        )
+
+    def test_load_logs_invalid_json(self, tmp_path, caplog):
+        """Test that loading invalid JSON logs error message."""
+        import logging
+
+        caplog.set_level(logging.ERROR)
+        invalid_json_path = tmp_path / "invalid.json"
+        invalid_json_path.write_text("invalid json{")
+
+        manifest = ViteManifest(invalid_json_path)
+        data = manifest.load()
+
+        assert data == {}
+        assert any(
+            "Failed to parse manifest" in record.message for record in caplog.records
+        )
+
+    def test_load_logs_success(self, manifest_path, caplog):
+        """Test that loading valid manifest logs debug message."""
+        import logging
+
+        caplog.set_level(logging.DEBUG)
+        manifest = ViteManifest(manifest_path)
+        manifest.load()
+
+        assert any(
+            "Loaded manifest with" in record.message and "entries" in record.message
+            for record in caplog.records
+        )

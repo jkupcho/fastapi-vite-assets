@@ -10,6 +10,8 @@ Seamless Vite asset management for FastAPI applications with Jinja2 templates.
 - ⚡ **Fast** - leverages Vite's speed in development
 - 🔧 **Configurable** - customize paths and behavior
 - 🎨 **Framework agnostic** - works with any Vite frontend setup
+- ✅ **Production validation** - catches missing assets early
+- 📝 **Comprehensive logging** - debug issues easily
 
 ## Installation
 
@@ -53,9 +55,10 @@ app = FastAPI()
 templates = Jinja2Templates(directory="templates")
 
 # Configure Vite integration
+# New: manifest_path is auto-derived from assets_path
 vite_config = ViteConfig(
     assets_path="web/dist",
-    manifest_path="web/dist/.vite/manifest.json",
+    # manifest_path auto-derived: "web/dist/.vite/manifest.json"
 )
 setup_vite(app, templates, vite_config)
 
@@ -92,8 +95,8 @@ ViteConfig(
     # Path to Vite build output directory
     assets_path: str = "dist",
 
-    # Path to Vite manifest.json
-    manifest_path: str = "dist/.vite/manifest.json",
+    # Path to Vite manifest.json (auto-derived if None)
+    manifest_path: Optional[str] = None,
 
     # Vite dev server URL
     dev_server_url: str = "http://localhost:5173",
@@ -109,8 +112,25 @@ ViteConfig(
 
     # Base path to resolve relative paths
     base_path: Optional[Path] = None,
+
+    # Validate configuration during setup
+    validate_on_setup: bool = True,
+
+    # Warn if assets missing in production
+    warn_on_missing_assets: bool = True,
+
+    # Warn if manifest missing in production
+    warn_on_missing_manifest: bool = True,
+
+    # Raise exceptions instead of warnings
+    strict_mode: bool = False,
 )
 ```
+
+**New in v0.2.0:**
+- `manifest_path` is now optional and auto-derived from `assets_path` as `{assets_path}/.vite/manifest.json`
+- Added validation flags to catch configuration issues early
+- Added `strict_mode` for fail-fast behavior in production
 
 ### Environment Variables
 
@@ -166,6 +186,88 @@ ENV=production uvicorn app.main:app
 ## Docker Deployment
 
 See the example `Dockerfile` in the repository for a multistage build setup.
+
+## Logging and Debugging
+
+`fastapi-vite-assets` uses Python's standard logging. Configure it to see what's happening:
+
+```python
+import logging
+
+# Enable debug logging for detailed output
+logging.basicConfig(level=logging.DEBUG)
+
+# Or configure just this package
+logging.getLogger("fastapi_vite_assets").setLevel(logging.INFO)
+```
+
+**Log levels:**
+- `DEBUG`: Configuration details, manifest loading, path resolution
+- `INFO`: Static file mounting, setup completion
+- `WARNING`: Missing assets, manifest issues, configuration problems
+- `ERROR`: Critical failures like malformed JSON
+
+## Production Validation
+
+Catch configuration errors before they cause runtime issues:
+
+### Default Behavior (Warnings)
+
+By default, validation runs during `setup_vite()` and logs warnings:
+
+```python
+vite_config = ViteConfig(assets_path="web/dist")
+setup_vite(app, templates, vite_config)
+# Logs warnings if assets missing in production
+```
+
+### Strict Mode (Fail Fast)
+
+Use strict mode to raise exceptions for misconfigurations:
+
+```python
+vite_config = ViteConfig(
+    assets_path="web/dist",
+    strict_mode=True  # Raises ValueError if assets missing
+)
+setup_vite(app, templates, vite_config)
+```
+
+### Disable Validation
+
+If you prefer to handle validation yourself:
+
+```python
+vite_config = ViteConfig(
+    assets_path="web/dist",
+    validate_on_setup=False
+)
+setup_vite(app, templates, vite_config)
+
+# Run validation manually later
+issues = vite_config.validate()
+if issues:
+    for issue in issues:
+        print(f"Warning: {issue}")
+```
+
+## Migration from v0.1.x
+
+If you're upgrading from an earlier version, your existing code continues to work:
+
+```python
+# v0.1.x - Still works in v0.2.0
+vite_config = ViteConfig(
+    assets_path="web/dist",
+    manifest_path="web/dist/.vite/manifest.json",  # Explicit
+)
+
+# v0.2.0 - Simpler (recommended)
+vite_config = ViteConfig(
+    assets_path="web/dist",
+    # manifest_path auto-derived
+)
+```
 
 ## Examples
 

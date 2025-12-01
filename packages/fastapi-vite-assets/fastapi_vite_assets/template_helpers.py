@@ -4,6 +4,7 @@ from jinja2 import pass_context
 from markupsafe import Markup
 
 from .config import ViteConfig
+from .logger import logger
 from .manifest import ViteManifest
 
 
@@ -85,6 +86,10 @@ class ViteTemplateHelpers:
         chunk = self.manifest.get_chunk(path)
 
         if not chunk:
+            logger.warning(
+                f"Asset '{path}' not found in manifest. "
+                f"Ensure it's listed in vite.config.ts build.rollupOptions.input"
+            )
             return Markup("")
 
         tags = []

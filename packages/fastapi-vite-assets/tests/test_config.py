@@ -13,12 +13,16 @@ class TestViteConfig:
         config = ViteConfig()
 
         assert config.assets_path == "dist"
-        assert config.manifest_path == "dist/.vite/manifest.json"
+        assert config.manifest_path == "dist/.vite/manifest.json"  # Auto-derived
         assert config.dev_server_url == "http://localhost:5173"
         assert config.static_url_prefix == "/static"
         assert config.auto_detect_dev is True
         assert config.force_dev_mode is None
         assert config.base_path == Path.cwd()
+        assert config.validate_on_setup is True
+        assert config.warn_on_missing_assets is True
+        assert config.warn_on_missing_manifest is True
+        assert config.strict_mode is False
 
     def test_custom_config(self):
         """Test custom configuration values."""
@@ -95,3 +99,76 @@ class TestViteConfig:
         config = ViteConfig(dev_server_url="http://localhost:3000")
 
         assert config.get_dev_server_host() == "http://localhost:3000"
+
+    def test_auto_derive_manifest_path(self):
+        """Test manifest_path auto-derivation from assets_path."""
+        config = ViteConfig(assets_path="web/dist")
+
+        assert config.manifest_path == "web/dist/.vite/manifest.json"
+
+    def test_explicit_manifest_path_preserved(self):
+        """Test that explicit manifest_path is preserved (not auto-derived)."""
+        config = ViteConfig(
+            assets_path="web/dist", manifest_path="custom/path/manifest.json"
+        )
+
+        assert config.manifest_path == "custom/path/manifest.json"
+
+    def test_validate_in_dev_mode(self, monkeypatch, tmp_path):
+        """Test validation is skipped in development mode."""
+        monkeypatch.setenv("ENV", "development")
+        config = ViteConfig(assets_path="nonexistent", base_path=tmp_path)
+
+        issues = config.validate()
+        assert len(issues) == 0  # No validation in dev mode
+
+    def test_validate_missing_assets(self, monkeypatch, tmp_path):
+        """Test validation detects missing assets directory."""
+        monkeypatch.setenv("ENV", "production")
+        config = ViteConfig(assets_path="nonexistent", base_path=tmp_path)
+
+        issues = config.validate()
+        assert len(issues) > 0
+        assert any("Assets directory not found" in issue for issue in issues)
+
+    def test_validate_missing_manifest(self, monkeypatch, tmp_path):
+        """Test validation detects missing manifest file."""
+        monkeypatch.setenv("ENV", "production")
+        # Create assets directory but no manifest
+        assets_dir = tmp_path / "dist"
+        assets_dir.mkdir()
+
+        config = ViteConfig(assets_path="dist", base_path=tmp_path)
+
+        issues = config.validate()
+        assert len(issues) > 0
+        assert any("Manifest file not found" in issue for issue in issues)
+
+    def test_validate_invalid_json(self, monkeypatch, tmp_path):
+        """Test validation detects invalid JSON in manifest."""
+        monkeypatch.setenv("ENV", "production")
+        # Create assets directory and invalid manifest
+        assets_dir = tmp_path / "dist" / ".vite"
+        assets_dir.mkdir(parents=True)
+        manifest_file = assets_dir / "manifest.json"
+        manifest_file.write_text("invalid json{")
+
+        config = ViteConfig(assets_path="dist", base_path=tmp_path)
+
+        issues = config.validate()
+        assert len(issues) > 0
+        assert any("not valid JSON" in issue for issue in issues)
+
+    def test_validate_valid_manifest(self, monkeypatch, tmp_path):
+        """Test validation passes with valid manifest."""
+        monkeypatch.setenv("ENV", "production")
+        # Create assets directory and valid manifest
+        assets_dir = tmp_path / "dist" / ".vite"
+        assets_dir.mkdir(parents=True)
+        manifest_file = assets_dir / "manifest.json"
+        manifest_file.write_text('{"src/main.ts": {"file": "assets/main.js"}}')
+
+        config = ViteConfig(assets_path="dist", base_path=tmp_path)
+
+        issues = config.validate()
+        assert len(issues) == 0  # No issues
