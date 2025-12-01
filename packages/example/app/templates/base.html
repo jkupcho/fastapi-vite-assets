@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Example{% endblock %}</title>
+    {{ vite_hmr_client() }}
+    {{ vite_asset("src/style.css") }}
+</head>
+
+<body>
+    {% block content %}{% endblock %}
+    {{ vite_asset("src/main.ts") }}
+</body>
+
+</html>
