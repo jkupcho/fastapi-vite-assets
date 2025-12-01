@@ -30,7 +30,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          uv sync --dev
+          uv sync --all-extras --dev
 
       - name: Run type checks
         run: |
@@ -70,7 +70,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          uv sync --dev
+          uv sync --all-extras --dev
           uv pip install ruff
 
       - name: Run ruff check
