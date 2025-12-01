@@ -50,7 +50,9 @@ class TestIntegration:
         assert "vite_hmr_client" in templates.env.globals
         assert "vite_asset" in templates.env.globals
 
-    def test_setup_vite_mounts_static_files(self, app, templates, manifest_path, tmp_path):
+    def test_setup_vite_mounts_static_files(
+        self, app, templates, manifest_path, tmp_path
+    ):
         """Test that setup_vite mounts static files when assets exist."""
         # Create dist directory
         dist_dir = tmp_path / "web" / "dist"

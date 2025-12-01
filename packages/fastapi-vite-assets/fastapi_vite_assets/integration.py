@@ -59,7 +59,7 @@ def setup_vite(
         app.mount(
             config.static_url_prefix,
             StaticFiles(directory=str(config.full_assets_path)),
-            name="static"
+            name="static",
         )
 
     return helpers

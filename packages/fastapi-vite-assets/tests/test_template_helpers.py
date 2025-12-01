@@ -44,8 +44,8 @@ class TestViteTemplateHelpers:
 
         assert isinstance(result, Markup)
         assert '<script type="module"' in str(result)
-        assert '/@vite/client' in str(result)
-        assert 'http://localhost:5173' in str(result)
+        assert "/@vite/client" in str(result)
+        assert "http://localhost:5173" in str(result)
 
     def test_vite_hmr_client_prod_mode(self, prod_config):
         """Test HMR client injection in production mode."""
@@ -67,7 +67,7 @@ class TestViteTemplateHelpers:
         helpers = ViteTemplateHelpers(config)
         result = helpers.vite_hmr_client()
 
-        assert 'http://0.0.0.0:3000' in str(result)
+        assert "http://0.0.0.0:3000" in str(result)
 
     def test_vite_asset_dev_mode_js(self, dev_config):
         """Test JavaScript asset injection in development mode."""
@@ -163,5 +163,5 @@ class TestViteTemplateHelpers:
 
         assert isinstance(hmr_result, Markup)
         assert isinstance(asset_result, Markup)
-        assert '/@vite/client' in str(hmr_result)
-        assert 'src/main.ts' in str(asset_result)
+        assert "/@vite/client" in str(hmr_result)
+        assert "src/main.ts" in str(asset_result)

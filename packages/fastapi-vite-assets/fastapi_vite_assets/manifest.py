@@ -26,7 +26,7 @@ class ViteManifest:
         if not self.manifest_path.exists():
             return {}
 
-        with open(self.manifest_path, 'r') as f:
+        with open(self.manifest_path, "r") as f:
             self._manifest = json.load(f)
 
         return self._manifest

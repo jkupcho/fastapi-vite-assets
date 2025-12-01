@@ -222,7 +222,10 @@ class TestSecurityIntegration:
         test_cases = [
             ('{"__proto__": {"polluted": true}}', "prototype pollution"),
             ('{"src/main.ts": null}', "null value"),
-            ('{"src/main.ts": {"file": "../../../etc/passwd"}}', "traversal in manifest"),
+            (
+                '{"src/main.ts": {"file": "../../../etc/passwd"}}',
+                "traversal in manifest",
+            ),
         ]
 
         for content, description in test_cases:

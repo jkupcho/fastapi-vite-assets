@@ -68,7 +68,7 @@ class ViteTemplateHelpers:
         dev_server = self.config.get_dev_server_host()
         url = f"{dev_server}/{path}"
 
-        if path.endswith('.css'):
+        if path.endswith(".css"):
             return Markup(f'<link rel="stylesheet" href="{url}">')
         else:
             return Markup(f'<script type="module" src="{url}"></script>')
@@ -88,21 +88,27 @@ class ViteTemplateHelpers:
             return Markup("")
 
         tags = []
-        file_path = chunk.get('file')
+        file_path = chunk.get("file")
         static_prefix = self.config.static_url_prefix
 
         if file_path:
-            if path.endswith('.css') or file_path.endswith('.css'):
-                tags.append(f'<link rel="stylesheet" href="{static_prefix}/{file_path}">')
+            if path.endswith(".css") or file_path.endswith(".css"):
+                tags.append(
+                    f'<link rel="stylesheet" href="{static_prefix}/{file_path}">'
+                )
             else:
-                tags.append(f'<script type="module" src="{static_prefix}/{file_path}"></script>')
+                tags.append(
+                    f'<script type="module" src="{static_prefix}/{file_path}"></script>'
+                )
 
         # Include CSS files referenced by this chunk
-        if 'css' in chunk:
-            for css_file in chunk['css']:
-                tags.append(f'<link rel="stylesheet" href="{static_prefix}/{css_file}">')
+        if "css" in chunk:
+            for css_file in chunk["css"]:
+                tags.append(
+                    f'<link rel="stylesheet" href="{static_prefix}/{css_file}">'
+                )
 
-        return Markup('\n    '.join(tags))
+        return Markup("\n    ".join(tags))
 
     def create_jinja_functions(self):
         """Create Jinja2-compatible functions.
@@ -110,6 +116,7 @@ class ViteTemplateHelpers:
         Returns:
             Dictionary of function names to callables
         """
+
         @pass_context
         def hmr_client(context):
             return self.vite_hmr_client()
@@ -119,6 +126,6 @@ class ViteTemplateHelpers:
             return self.vite_asset(path)
 
         return {
-            'vite_hmr_client': hmr_client,
-            'vite_asset': asset,
+            "vite_hmr_client": hmr_client,
+            "vite_asset": asset,
         }
