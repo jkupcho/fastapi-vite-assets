@@ -58,5 +58,5 @@ tag_format = "v$version"
 update_changelog_on_bump = true
 changelog_file = "CHANGELOG.md"
 changelog_incremental = true
-changelog_start_rev = "4628c49"
+changelog_start_rev = "f2e22f6"
 bump_message = "chore(release): version $new_version"
