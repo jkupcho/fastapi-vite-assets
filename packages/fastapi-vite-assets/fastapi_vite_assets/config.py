@@ -49,11 +49,13 @@ class ViteConfig:
     @property
     def full_assets_path(self) -> Path:
         """Get the full path to assets directory."""
+        assert self.base_path is not None  # Always set in __post_init__
         return self.base_path / self.assets_path
 
     @property
     def full_manifest_path(self) -> Path:
         """Get the full path to manifest file."""
+        assert self.base_path is not None  # Always set in __post_init__
         return self.base_path / self.manifest_path
 
     def get_dev_server_host(self) -> str:
