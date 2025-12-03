@@ -1,6 +1,6 @@
 [project]
 name = "fastapi-vite-assets"
-version = "0.1.0"
+version = "0.2.0"
 description = "Vite asset management for FastAPI with Jinja2 templates"
 readme = "README.md"
 requires-python = ">=3.10"
@@ -61,7 +61,7 @@ ignore = ["E501"]  # Ignore line-too-long (formatter handles this where possible
 
 [tool.commitizen]
 name = "cz_conventional_commits"
-version = "0.1.0"
+version = "0.2.0"
 version_files = ["pyproject.toml:version"]
 tag_format = "fastapi-vite-assets-v$version"
 legacy_tag_formats = ["v$version"]
