@@ -79,7 +79,7 @@ jobs:
           uv run scripts/release.py --commit
 
           # Get the new version from pyproject.toml
-          NEW_VERSION=$(grep '^version = ' packages/fastapi-vite-assets/pyproject.toml | sed 's/version = "\(.*\)"/\1/')
+          NEW_VERSION=$(grep '^version = ' packages/fastapi-vite-assets/pyproject.toml | head -n 1 | sed 's/version = "\(.*\)"/\1/')
           echo "New version: $NEW_VERSION"
 
           # Create tag with package prefix

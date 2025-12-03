@@ -1,6 +1,6 @@
 # FastAPI Vite Integration
 
-Seamless Vite asset management for FastAPI applications with Jinja2 templates. Supports automatic manifest path derivation and production-ready asset serving.
+Seamless Vite asset management for FastAPI applications with Jinja2 templates. Features automatic manifest path derivation and production-ready asset serving.
 
 ## Features
 
