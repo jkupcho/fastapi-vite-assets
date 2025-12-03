@@ -108,9 +108,7 @@ class TestViteConfig:
 
     def test_explicit_manifest_path_preserved(self):
         """Test that explicit manifest_path is preserved (not auto-derived)."""
-        config = ViteConfig(
-            assets_path="web/dist", manifest_path="custom/path/manifest.json"
-        )
+        config = ViteConfig(assets_path="web/dist", manifest_path="custom/path/manifest.json")
 
         assert config.manifest_path == "custom/path/manifest.json"
 

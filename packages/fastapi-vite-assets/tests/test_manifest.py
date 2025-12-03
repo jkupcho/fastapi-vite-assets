@@ -79,9 +79,7 @@ class TestViteManifest:
         data = manifest.load()
 
         assert data == {}
-        assert any(
-            "Manifest file not found" in record.message for record in caplog.records
-        )
+        assert any("Manifest file not found" in record.message for record in caplog.records)
 
     def test_load_logs_invalid_json(self, tmp_path, caplog):
         """Test that loading invalid JSON logs error message."""
@@ -95,9 +93,7 @@ class TestViteManifest:
         data = manifest.load()
 
         assert data == {}
-        assert any(
-            "Failed to parse manifest" in record.message for record in caplog.records
-        )
+        assert any("Failed to parse manifest" in record.message for record in caplog.records)
 
     def test_load_logs_success(self, manifest_path, caplog):
         """Test that loading valid manifest logs debug message."""

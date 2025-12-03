@@ -1,0 +1,114 @@
+name: Automated Release
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'packages/fastapi-vite-assets/**'
+      - '!packages/fastapi-vite-assets/CHANGELOG.md'
+      - '!packages/fastapi-vite-assets/pyproject.toml'
+
+# Only allow one release workflow to run at a time
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout with full history
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          version: "latest"
+
+      - name: Install dependencies
+        run: uv sync --all-extras
+
+      - name: Check if release needed
+        id: check_release
+        run: |
+          cd packages/fastapi-vite-assets
+          # Use commitizen to check if version bump is needed
+          if uv run cz bump --dry-run 2>&1 | grep -q "→"; then
+            echo "release_needed=true" >> $GITHUB_OUTPUT
+            # Extract the bump type for later
+            BUMP_OUTPUT=$(uv run cz bump --dry-run 2>&1)
+            if echo "$BUMP_OUTPUT" | grep -q "BREAKING CHANGE"; then
+              echo "bump_type=major" >> $GITHUB_OUTPUT
+            elif echo "$BUMP_OUTPUT" | grep -q "feat"; then
+              echo "bump_type=minor" >> $GITHUB_OUTPUT
+            else
+              echo "bump_type=patch" >> $GITHUB_OUTPUT
+            fi
+          else
+            echo "release_needed=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Create release
+        if: steps.check_release.outputs.release_needed == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # Configure git
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          # Run release script with commit flag
+          uv run scripts/release.py --commit
+
+          # Get the new version from pyproject.toml
+          NEW_VERSION=$(grep '^version = ' packages/fastapi-vite-assets/pyproject.toml | sed 's/version = "\(.*\)"/\1/')
+          echo "New version: $NEW_VERSION"
+
+          # Create tag
+          git tag -a "v$NEW_VERSION" -m "Release v$NEW_VERSION"
+
+          # Push commit and tag
+          git push origin main
+          git push origin "v$NEW_VERSION"
+
+          # Extract changelog for this version
+          cd packages/fastapi-vite-assets
+          CHANGELOG_CONTENT=$(awk "/## $NEW_VERSION/,/## [0-9]/" CHANGELOG.md | head -n -1)
+
+          # Create GitHub release
+          BUMP_TYPE="${{ steps.check_release.outputs.bump_type }}"
+          if [ "$BUMP_TYPE" = "major" ]; then
+            # Major versions are created as draft for manual review
+            gh release create "v$NEW_VERSION" \
+              --title "v$NEW_VERSION" \
+              --notes "$CHANGELOG_CONTENT" \
+              --draft
+            echo "✅ Draft release created for major version v$NEW_VERSION"
+            echo "⚠️  Please review and publish manually at: https://github.com/${{ github.repository }}/releases"
+          else
+            # Minor and patch versions are published automatically
+            gh release create "v$NEW_VERSION" \
+              --title "v$NEW_VERSION" \
+              --notes "$CHANGELOG_CONTENT"
+            echo "✅ Release v$NEW_VERSION published successfully"
+            echo "🚀 PyPI publish workflow will be triggered automatically"
+          fi
+
+      - name: No release needed
+        if: steps.check_release.outputs.release_needed == 'false'
+        run: |
+          echo "ℹ️  No release needed - no feat/fix commits found since last release"
+          echo "💡 Use conventional commits (feat:, fix:) to trigger releases"

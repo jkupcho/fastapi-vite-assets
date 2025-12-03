@@ -21,7 +21,9 @@ import sys
 from pathlib import Path
 
 
-def run_command(cmd: list[str], cwd: Path | None = None, check: bool = False) -> tuple[int, str]:
+def run_command(
+    cmd: list[str], cwd: Path | None = None, check: bool = False
+) -> tuple[int, str]:
     """Run a command and return exit code and output."""
     result = subprocess.run(
         cmd,
@@ -110,7 +112,9 @@ def main():
             print("   ❌ Failed to analyze commits!")
             print(output)
             if "No commits found" in output or "No new commits" in output:
-                print("\n💡 Hint: Make some conventional commits first (feat:, fix:, etc.)")
+                print(
+                    "\n💡 Hint: Make some conventional commits first (feat:, fix:, etc.)"
+                )
             sys.exit(1)
 
         # Extract new version from dry-run output
@@ -165,9 +169,13 @@ def main():
             header_end = changelog_content.find("\n## ")
             if header_end > 0:
                 new_entry = f"\n## {new_version} (Manual release)\n\n### Changes\n\n- Manual version bump to {new_version}\n"
-                updated_changelog = changelog_content[:header_end] + new_entry + changelog_content[header_end:]
+                updated_changelog = (
+                    changelog_content[:header_end]
+                    + new_entry
+                    + changelog_content[header_end:]
+                )
                 changelog_path.write_text(updated_changelog)
-                print(f"   ✅ Updated CHANGELOG.md")
+                print("   ✅ Updated CHANGELOG.md")
     else:
         # Auto version: use commitizen bump
         exit_code, output = run_command(
@@ -181,7 +189,7 @@ def main():
             sys.exit(1)
 
         print(f"   ✅ Bumped version to {new_version}")
-        print(f"   ✅ Updated CHANGELOG.md")
+        print("   ✅ Updated CHANGELOG.md")
 
     print()
 
@@ -191,7 +199,9 @@ def main():
     if exit_code != 0:
         print("   ❌ Tests failed!")
         print(output)
-        print("\n⚠️  Version has been updated but tests failed. Please fix and commit manually.")
+        print(
+            "\n⚠️  Version has been updated but tests failed. Please fix and commit manually."
+        )
         sys.exit(1)
     print("   ✅ All tests passed")
     print()
@@ -205,7 +215,9 @@ def main():
     if exit_code != 0:
         print("   ❌ Build failed!")
         print(output)
-        print("\n⚠️  Version has been updated but build failed. Please fix and commit manually.")
+        print(
+            "\n⚠️  Version has been updated but build failed. Please fix and commit manually."
+        )
         sys.exit(1)
     print("   ✅ Build successful")
     print()
@@ -275,16 +287,22 @@ def main():
     if not args.commit:
         print("📋 Next steps:")
         print("   1. Review the staged changes: git diff --staged")
-        print(f"   2. Commit the changes: git commit -m 'chore(release): version {new_version}'")
+        print(
+            f"   2. Commit the changes: git commit -m 'chore(release): version {new_version}'"
+        )
         print("   3. Push to remote: git push")
-        print(f"   4. Create GitHub release: https://github.com/jkupcho/fastapi-vite-assets/releases/new")
+        print(
+            "   4. Create GitHub release: https://github.com/jkupcho/fastapi-vite-assets/releases/new"
+        )
         print(f"      - Tag: v{new_version}")
         print(f"      - Title: v{new_version}")
         print("      - Copy changelog content from above")
     else:
         print("📋 Next steps:")
         print("   1. Push to remote: git push")
-        print(f"   2. Create GitHub release: https://github.com/jkupcho/fastapi-vite-assets/releases/new")
+        print(
+            "   2. Create GitHub release: https://github.com/jkupcho/fastapi-vite-assets/releases/new"
+        )
         print(f"      - Tag: v{new_version}")
         print(f"      - Title: v{new_version}")
         print("      - Copy changelog content from above")

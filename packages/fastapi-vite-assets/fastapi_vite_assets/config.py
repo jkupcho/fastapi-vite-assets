@@ -103,9 +103,7 @@ class ViteConfig:
                 f"Run 'npm run build' to generate production assets."
             )
         elif not self.full_assets_path.is_dir():
-            issues.append(
-                f"Assets path exists but is not a directory: {self.full_assets_path}"
-            )
+            issues.append(f"Assets path exists but is not a directory: {self.full_assets_path}")
 
         # Check manifest file
         if not self.full_manifest_path.exists():
@@ -114,9 +112,7 @@ class ViteConfig:
                 f"Ensure vite.config.ts has 'build.manifest: true'"
             )
         elif not self.full_manifest_path.is_file():
-            issues.append(
-                f"Manifest path exists but is not a file: {self.full_manifest_path}"
-            )
+            issues.append(f"Manifest path exists but is not a file: {self.full_manifest_path}")
         else:
             # Validate JSON format
             try:
@@ -128,8 +124,7 @@ class ViteConfig:
                         )
             except json.JSONDecodeError as e:
                 issues.append(
-                    f"Manifest file is not valid JSON: {self.full_manifest_path}. "
-                    f"Error: {e}"
+                    f"Manifest file is not valid JSON: {self.full_manifest_path}. " f"Error: {e}"
                 )
 
         return issues

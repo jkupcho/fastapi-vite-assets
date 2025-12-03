@@ -8,9 +8,9 @@ This guide explains how to publish the `fastapi-vite-assets` package to PyPI.
 
 ## Publishing Workflow
 
-### Publishing a New Release (Recommended - Automated)
+### Publishing a New Release (Fully Automated) ⚡
 
-The easiest way to create a release using the automated script (see "Quick Release" section below):
+The project now has **fully automated releases** via GitHub Actions:
 
 1. **Make conventional commits** as you develop:
    ```bash
@@ -18,16 +18,34 @@ The easiest way to create a release using the automated script (see "Quick Relea
    git commit -m "fix: resolve bug"
    ```
 
-2. **Run the release script**:
+2. **Push to main branch** (via PR or direct push):
    ```bash
-   uv run scripts/release.py          # Preview & stage
-   git diff --staged                  # Review changes
-   git commit -m "chore(release): version X.Y.Z"
+   git push origin main
+   ```
+
+3. **Automatic Release** 🤖:
+   - GitHub Actions detects your `feat`/`fix` commits
+   - Automatically bumps version using Commitizen
+   - Updates `pyproject.toml` and `CHANGELOG.md`
+   - Creates git tag (`v0.2.0`)
+   - Creates GitHub Release:
+     - **Minor/Patch versions**: Published automatically
+     - **Major versions**: Created as draft (requires manual approval)
+   - Publishes to PyPI via trusted publishing
+
+**That's it!** No manual version bumping or GitHub release creation needed.
+
+### Manual Release Override (Optional)
+
+If you need to manually trigger a release or override the automation:
+
+1. **Run the release script locally**:
+   ```bash
+   uv run scripts/release.py --commit
    git push
    ```
 
-3. **Create GitHub Release**:
-
+2. **Create GitHub Release manually**:
    - Go to your repository on GitHub
    - Click "Releases" → "Create a new release"
    - Click "Choose a tag"
@@ -36,7 +54,7 @@ The easiest way to create a release using the automated script (see "Quick Relea
    - Description: Add release notes/changelog
    - Click "Publish release"
 
-6. **Automatic Publishing**:
+3. **Automatic Publishing**:
    - GitHub Actions will automatically trigger the `publish.yml` workflow
    - The package will be built and published to PyPI via trusted publishing
    - Monitor progress in the "Actions" tab
@@ -49,6 +67,40 @@ Follow [Semantic Versioning](https://semver.org/):
 - **MAJOR** version (1.0.0): Incompatible API changes
 - **MINOR** version (0.1.0): Add functionality (backwards-compatible)
 - **PATCH** version (0.0.1): Bug fixes (backwards-compatible)
+
+## Pre-commit Hooks
+
+The project uses **pre-commit hooks** to ensure code quality before commits:
+
+### Setup (One-time)
+
+```bash
+# After cloning the repository, install hooks
+uv run pre-commit install
+```
+
+### What Gets Checked
+
+Pre-commit automatically runs on every commit:
+- **Ruff format**: Auto-formats Python code
+- **Ruff lint**: Catches common errors
+- **Trailing whitespace**: Removes trailing spaces
+- **End-of-file**: Ensures files end with newline
+- **YAML/TOML syntax**: Validates configuration files
+- **Large files**: Prevents accidentally committing large files
+
+### Manual Usage
+
+```bash
+# Run hooks on all files
+uv run pre-commit run --all-files
+
+# Run hooks on staged files only
+uv run pre-commit run
+
+# Skip hooks for emergency commits (use sparingly)
+git commit --no-verify -m "emergency fix"
+```
 
 ## Pre-release Checklist
 
@@ -80,6 +132,7 @@ pip install dist/fastapi_vite_assets-0.2.0-py3-none-any.whl --force-reinstall
 
 Checklist:
 
+- [ ] Pre-commit hooks installed (`uv run pre-commit install`)
 - [ ] All tests pass (`pytest`)
 - [ ] Example app works correctly
 - [ ] Local build succeeds

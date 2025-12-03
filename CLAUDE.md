@@ -219,7 +219,7 @@ base_path = /workspace/packages/example
 
 ```bash
 # Sync all workspace dependencies (including test/lint/format tools)
-# IMPORTANT: Use --all-extras for development to get pytest, ruff, etc.
+# IMPORTANT: Use --all-extras for development to get pytest, ruff, pre-commit, etc.
 uv sync --all-extras
 
 # Sync without extras (minimal install, for production)
@@ -240,6 +240,34 @@ uv run pytest
 uv run ruff check
 uv run ruff format
 ```
+
+### Pre-commit Hooks
+
+Pre-commit hooks automatically check code quality before commits:
+
+```bash
+# Install hooks (one-time setup after cloning)
+uv run pre-commit install
+
+# Run hooks manually on all files
+uv run pre-commit run --all-files
+
+# Run hooks on staged files only
+uv run pre-commit run
+
+# Skip hooks for a specific commit (emergencies only)
+git commit --no-verify -m "emergency fix"
+```
+
+**What the hooks check:**
+- Ruff format (auto-fixes formatting)
+- Ruff lint (catches common errors)
+- Trailing whitespace removal
+- End-of-file fixes
+- YAML/TOML syntax validation
+- Large file detection
+
+**Scope**: Hooks run on all packages in the workspace (library and example)
 
 ### Vite Commands
 

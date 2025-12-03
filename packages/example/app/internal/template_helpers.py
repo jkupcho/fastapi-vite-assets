@@ -35,7 +35,7 @@ def vite_asset(context, path: str):
         vite_port = os.getenv("VITE_PORT", "5173")
         url = f"http://{vite_host}:{vite_port}/{path}"
 
-        if path.endswith('.css'):
+        if path.endswith(".css"):
             return Markup(f'<link rel="stylesheet" href="{url}">')
         else:
             return Markup(f'<script type="module" src="{url}"></script>')
@@ -48,17 +48,19 @@ def vite_asset(context, path: str):
             return Markup("")
 
         tags = []
-        file_path = chunk.get('file')
+        file_path = chunk.get("file")
 
         if file_path:
-            if path.endswith('.css') or file_path.endswith('.css'):
+            if path.endswith(".css") or file_path.endswith(".css"):
                 tags.append(f'<link rel="stylesheet" href="/static/{file_path}">')
             else:
-                tags.append(f'<script type="module" src="/static/{file_path}"></script>')
+                tags.append(
+                    f'<script type="module" src="/static/{file_path}"></script>'
+                )
 
         # Include CSS files referenced by this chunk
-        if 'css' in chunk:
-            for css_file in chunk['css']:
+        if "css" in chunk:
+            for css_file in chunk["css"]:
                 tags.append(f'<link rel="stylesheet" href="/static/{css_file}">')
 
-        return Markup('\n    '.join(tags))
+        return Markup("\n    ".join(tags))

@@ -51,9 +51,7 @@ class TestIntegration:
         assert "vite_hmr_client" in templates.env.globals
         assert "vite_asset" in templates.env.globals
 
-    def test_setup_vite_mounts_static_files(
-        self, app, templates, manifest_path, tmp_path
-    ):
+    def test_setup_vite_mounts_static_files(self, app, templates, manifest_path, tmp_path):
         """Test that setup_vite mounts static files when assets exist."""
         # Create dist directory
         dist_dir = tmp_path / "web" / "dist"
@@ -160,9 +158,7 @@ class TestIntegration:
 
         assert "/assets/assets/main-D2jVR6rk.js" in result
 
-    def test_validation_warns_missing_assets(
-        self, app, templates, tmp_path, monkeypatch, caplog
-    ):
+    def test_validation_warns_missing_assets(self, app, templates, tmp_path, monkeypatch, caplog):
         """Test that validation warns about missing assets in production."""
         import logging
 
@@ -178,13 +174,9 @@ class TestIntegration:
         setup_vite(app, templates, config)
 
         # Check that warning was logged
-        assert any(
-            "Assets directory not found" in record.message for record in caplog.records
-        )
+        assert any("Assets directory not found" in record.message for record in caplog.records)
 
-    def test_strict_mode_raises_on_missing_assets(
-        self, app, templates, tmp_path, monkeypatch
-    ):
+    def test_strict_mode_raises_on_missing_assets(self, app, templates, tmp_path, monkeypatch):
         """Test that strict mode raises exception for missing assets."""
         monkeypatch.setenv("ENV", "production")
 
@@ -197,9 +189,7 @@ class TestIntegration:
         with pytest.raises(ValueError, match="Vite configuration error"):
             setup_vite(app, templates, config)
 
-    def test_validation_skipped_in_dev_mode(
-        self, app, templates, tmp_path, monkeypatch, caplog
-    ):
+    def test_validation_skipped_in_dev_mode(self, app, templates, tmp_path, monkeypatch, caplog):
         """Test that validation is skipped in development mode."""
         import logging
 
@@ -215,9 +205,7 @@ class TestIntegration:
         setup_vite(app, templates, config)
 
         # No warnings should be logged in dev mode
-        assert not any(
-            "Assets directory not found" in record.message for record in caplog.records
-        )
+        assert not any("Assets directory not found" in record.message for record in caplog.records)
 
     def test_auto_derived_manifest_path(self, app, templates, tmp_path):
         """Test that manifest_path is auto-derived from assets_path."""

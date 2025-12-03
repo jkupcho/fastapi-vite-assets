@@ -107,9 +107,10 @@ class TestSecurityIntegration:
 
         for attempt in encoded_attempts:
             response = client.get(attempt)
-            assert response.status_code in [404, 422], (
-                f"URL-encoded traversal {attempt} was not blocked!"
-            )
+            assert response.status_code in [
+                404,
+                422,
+            ], f"URL-encoded traversal {attempt} was not blocked!"
 
             if response.status_code == 200:
                 assert "SECRET_KEY" not in response.text
@@ -127,9 +128,10 @@ class TestSecurityIntegration:
 
         for attempt in absolute_attempts:
             response = client.get(attempt)
-            assert response.status_code in [404, 422], (
-                f"Absolute path {attempt} was not blocked!"
-            )
+            assert response.status_code in [
+                404,
+                422,
+            ], f"Absolute path {attempt} was not blocked!"
 
     def test_manifest_whitelisting_in_production(self, tmp_path):
         """Test that only files in manifest can generate asset tags in production."""
@@ -165,9 +167,7 @@ class TestSecurityIntegration:
 
         for invalid_path in invalid_paths:
             result = helpers.vite_asset(invalid_path)
-            assert str(result) == "", (
-                f"Non-manifest path {invalid_path} should return empty!"
-            )
+            assert str(result) == "", f"Non-manifest path {invalid_path} should return empty!"
 
     def test_config_paths_resolve_relative_to_base(self, tmp_path):
         """Test that config paths are resolved relative to base_path.
