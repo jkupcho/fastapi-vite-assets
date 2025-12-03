@@ -8,6 +8,7 @@ Seamless Vite asset management for FastAPI applications with Jinja2 templates. S
 - 📦 **Automatic manifest parsing** for production builds
 - 🎯 **Simple API** - one function call to setup
 - ⚡ **Fast** - leverages Vite's speed in development
+- 🔧 **Auto-configured** - manifest path derived from assets path
 - 🔧 **Configurable** - customize paths and behavior
 - 🎨 **Framework agnostic** - works with any Vite frontend setup
 - ✅ **Production validation** - catches missing assets early
