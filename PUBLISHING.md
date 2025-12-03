@@ -27,7 +27,7 @@ The project now has **fully automated releases** via GitHub Actions:
    - GitHub Actions detects your `feat`/`fix` commits
    - Automatically bumps version using Commitizen
    - Updates `pyproject.toml` and `CHANGELOG.md`
-   - Creates git tag (`v0.2.0`)
+   - Creates package-prefixed git tag (`fastapi-vite-assets-v0.2.0`)
    - Creates GitHub Release:
      - **Minor/Patch versions**: Published automatically
      - **Major versions**: Created as draft (requires manual approval)
@@ -49,8 +49,8 @@ If you need to manually trigger a release or override the automation:
    - Go to your repository on GitHub
    - Click "Releases" → "Create a new release"
    - Click "Choose a tag"
-   - Type `v0.2.0` (must start with `v`) and click "Create new tag"
-   - Release title: `v0.2.0`
+   - Type `fastapi-vite-assets-v0.2.0` (package-prefixed) and click "Create new tag"
+   - Release title: `fastapi-vite-assets v0.2.0`
    - Description: Add release notes/changelog
    - Click "Publish release"
 
@@ -244,8 +244,8 @@ git push
 echo "✅ Version bumped to $NEW_VERSION"
 echo "📋 Next steps:"
 echo "   1. Go to https://github.com/jkupcho/fastapi-vite-assets/releases/new"
-echo "   2. Create new tag: v$NEW_VERSION"
-echo "   3. Title: v$NEW_VERSION"
+echo "   2. Create new tag: fastapi-vite-assets-v$NEW_VERSION"
+echo "   3. Title: fastapi-vite-assets v$NEW_VERSION"
 echo "   4. Add release notes"
 echo "   5. Publish release"
 echo ""

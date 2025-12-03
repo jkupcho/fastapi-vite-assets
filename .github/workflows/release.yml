@@ -77,12 +77,13 @@ jobs:
           NEW_VERSION=$(grep '^version = ' packages/fastapi-vite-assets/pyproject.toml | sed 's/version = "\(.*\)"/\1/')
           echo "New version: $NEW_VERSION"
 
-          # Create tag
-          git tag -a "v$NEW_VERSION" -m "Release v$NEW_VERSION"
+          # Create tag with package prefix
+          TAG_NAME="fastapi-vite-assets-v$NEW_VERSION"
+          git tag -a "$TAG_NAME" -m "Release fastapi-vite-assets v$NEW_VERSION"
 
           # Push commit and tag
           git push origin main
-          git push origin "v$NEW_VERSION"
+          git push origin "$TAG_NAME"
 
           # Extract changelog for this version
           cd packages/fastapi-vite-assets
@@ -92,18 +93,18 @@ jobs:
           BUMP_TYPE="${{ steps.check_release.outputs.bump_type }}"
           if [ "$BUMP_TYPE" = "major" ]; then
             # Major versions are created as draft for manual review
-            gh release create "v$NEW_VERSION" \
-              --title "v$NEW_VERSION" \
+            gh release create "$TAG_NAME" \
+              --title "fastapi-vite-assets v$NEW_VERSION" \
               --notes "$CHANGELOG_CONTENT" \
               --draft
-            echo "✅ Draft release created for major version v$NEW_VERSION"
+            echo "✅ Draft release created for major version $TAG_NAME"
             echo "⚠️  Please review and publish manually at: https://github.com/${{ github.repository }}/releases"
           else
             # Minor and patch versions are published automatically
-            gh release create "v$NEW_VERSION" \
-              --title "v$NEW_VERSION" \
+            gh release create "$TAG_NAME" \
+              --title "fastapi-vite-assets v$NEW_VERSION" \
               --notes "$CHANGELOG_CONTENT"
-            echo "✅ Release v$NEW_VERSION published successfully"
+            echo "✅ Release $TAG_NAME published successfully"
             echo "🚀 PyPI publish workflow will be triggered automatically"
           fi
 

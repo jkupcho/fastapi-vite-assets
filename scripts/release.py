@@ -118,9 +118,19 @@ def main():
             sys.exit(1)
 
         # Extract new version from dry-run output
-        version_match = re.search(r"(\d+\.\d+\.\d+) → (\d+\.\d+\.\d+)", output)
+        # Try new format first: "tag to create: fastapi-vite-assets-vX.Y.Z" or "tag to create: vX.Y.Z"
+        version_match = re.search(
+            r"tag to create: (?:fastapi-vite-assets-)?v?(\d+\.\d+\.\d+)", output
+        )
+        if not version_match:
+            # Try old format: "X.Y.Z → X.Y.Z"
+            version_match = re.search(r"(\d+\.\d+\.\d+) → (\d+\.\d+\.\d+)", output)
+            if version_match:
+                new_version = version_match.group(2)
+        else:
+            new_version = version_match.group(1)
+
         if version_match:
-            new_version = version_match.group(2)
             print(f"   ✅ Auto-detected: {current_version} → {new_version}")
         else:
             print("   ⚠️  No version bump needed (no feat/fix commits found)")
@@ -294,8 +304,8 @@ def main():
         print(
             "   4. Create GitHub release: https://github.com/jkupcho/fastapi-vite-assets/releases/new"
         )
-        print(f"      - Tag: v{new_version}")
-        print(f"      - Title: v{new_version}")
+        print(f"      - Tag: fastapi-vite-assets-v{new_version}")
+        print(f"      - Title: fastapi-vite-assets v{new_version}")
         print("      - Copy changelog content from above")
     else:
         print("📋 Next steps:")
@@ -303,8 +313,8 @@ def main():
         print(
             "   2. Create GitHub release: https://github.com/jkupcho/fastapi-vite-assets/releases/new"
         )
-        print(f"      - Tag: v{new_version}")
-        print(f"      - Title: v{new_version}")
+        print(f"      - Tag: fastapi-vite-assets-v{new_version}")
+        print(f"      - Title: fastapi-vite-assets v{new_version}")
         print("      - Copy changelog content from above")
 
     print()
