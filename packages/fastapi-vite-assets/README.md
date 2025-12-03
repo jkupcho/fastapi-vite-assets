@@ -14,6 +14,7 @@ Seamless Vite asset management for FastAPI applications with Jinja2 templates. S
 - ✅ **Production validation** - catches missing assets early
 - 📝 **Comprehensive logging** - debug issues easily
 - 🔒 **Type-safe** - full type hints for IDE support
+- 🚀 **CI/CD ready** - automated releases with GitHub Actions
 
 ## Installation
 

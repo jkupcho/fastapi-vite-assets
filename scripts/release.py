@@ -187,9 +187,10 @@ def main():
                 changelog_path.write_text(updated_changelog)
                 print("   ✅ Updated CHANGELOG.md")
     else:
-        # Auto version: use commitizen bump
+        # Auto version: use commitizen bump without committing
+        # We'll handle the commit ourselves in Step 6
         exit_code, output = run_command(
-            ["uv", "run", "cz", "bump", "--yes"],
+            ["uv", "run", "cz", "bump", "--yes", "--no-verify"],
             cwd=package_dir,
         )
 
@@ -197,6 +198,14 @@ def main():
             print("   ❌ Version bump failed!")
             print(output)
             sys.exit(1)
+
+        # Commitizen already committed, so we need to reset the commit but keep changes
+        exit_code, _ = run_command(
+            ["git", "reset", "HEAD~1"],
+            cwd=project_root,
+        )
+        if exit_code != 0:
+            print("   ⚠️  Warning: Could not reset commitizen's auto-commit")
 
         print(f"   ✅ Bumped version to {new_version}")
         print("   ✅ Updated CHANGELOG.md")
