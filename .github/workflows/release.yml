@@ -84,6 +84,11 @@ jobs:
 
           # Create tag with package prefix
           TAG_NAME="fastapi-vite-assets-v$NEW_VERSION"
+
+          # Delete tag if it already exists (from previous failed run)
+          git tag -d "$TAG_NAME" 2>/dev/null || true
+          git push origin ":refs/tags/$TAG_NAME" 2>/dev/null || true
+
           git tag -a "$TAG_NAME" -m "Release fastapi-vite-assets v$NEW_VERSION"
 
           # Push commit and tag

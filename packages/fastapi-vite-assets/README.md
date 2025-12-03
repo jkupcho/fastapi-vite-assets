@@ -6,7 +6,7 @@ Seamless Vite asset management for FastAPI applications with Jinja2 templates. F
 
 - 🔥 **Hot Module Replacement (HMR)** in development
 - 📦 **Automatic manifest parsing** for production builds
-- 🎯 **Simple API** - one function call to setup
+- 🎯 **Simple API** - single function call to setup
 - ⚡ **Fast** - leverages Vite's speed in development
 - 🔧 **Auto-configured** - manifest path derived from assets path
 - 🔧 **Configurable** - customize paths and behavior
