@@ -50,7 +50,7 @@ jobs:
         run: |
           cd packages/fastapi-vite-assets
           # Use commitizen to check if version bump is needed
-          if uv run cz bump --dry-run 2>&1 | grep -q "→"; then
+          if uv run cz bump --dry-run 2>&1 | grep -qE "(→|tag to create)"; then
             echo "release_needed=true" >> $GITHUB_OUTPUT
             # Extract the bump type for later
             BUMP_OUTPUT=$(uv run cz bump --dry-run 2>&1)
