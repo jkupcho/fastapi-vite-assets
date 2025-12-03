@@ -344,7 +344,7 @@ wheels = [
 
 [[package]]
 name = "fastapi-vite-assets"
-version = "0.1.0"
+version = "0.2.0"
 source = { editable = "packages/fastapi-vite-assets" }
 dependencies = [
     { name = "fastapi" },
