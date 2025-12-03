@@ -24,7 +24,8 @@ The project now has **fully automated releases** via GitHub Actions:
    ```
 
 3. **Automatic Release** 🤖:
-   - GitHub Actions detects your `feat`/`fix` commits
+   - GitHub Actions runs tests and linting first
+   - If all checks pass, detects your `feat`/`fix` commits
    - Automatically bumps version using Commitizen
    - Updates `pyproject.toml` and `CHANGELOG.md`
    - Creates package-prefixed git tag (`fastapi-vite-assets-v0.2.0`)
@@ -32,6 +33,8 @@ The project now has **fully automated releases** via GitHub Actions:
      - **Minor/Patch versions**: Published automatically
      - **Major versions**: Created as draft (requires manual approval)
    - Publishes to PyPI via trusted publishing
+
+**Note**: Releases only happen if tests, type checks, and linting pass.
 
 **That's it!** No manual version bumping or GitHub release creation needed.
 
