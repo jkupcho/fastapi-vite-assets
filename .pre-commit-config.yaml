@@ -3,19 +3,23 @@
 # Run manually: uv run pre-commit run --all-files
 
 repos:
-  # Ruff - Fast Python linter and formatter
-  - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.8.4
+  # Ruff - Fast Python linter and formatter (using local installation)
+  - repo: local
     hooks:
       # Run the formatter
       - id: ruff-format
         name: ruff format
         description: Format Python code with ruff
+        entry: uv run ruff format
+        language: system
+        types: [python]
       # Run the linter
       - id: ruff
         name: ruff lint
         description: Lint Python code with ruff
-        args: [--fix, --exit-non-zero-on-fix]
+        entry: uv run ruff check --fix --exit-non-zero-on-fix
+        language: system
+        types: [python]
 
   # General file hygiene hooks
   - repo: https://github.com/pre-commit/pre-commit-hooks

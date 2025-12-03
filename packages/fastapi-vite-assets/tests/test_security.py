@@ -167,9 +167,9 @@ class TestSecurityIntegration:
 
         for invalid_path in invalid_paths:
             result = helpers.vite_asset(invalid_path)
-            assert (
-                str(result) == ""
-            ), f"Non-manifest path {invalid_path} should return empty!"
+            assert str(result) == "", (
+                f"Non-manifest path {invalid_path} should return empty!"
+            )
 
     def test_config_paths_resolve_relative_to_base(self, tmp_path):
         """Test that config paths are resolved relative to base_path.
