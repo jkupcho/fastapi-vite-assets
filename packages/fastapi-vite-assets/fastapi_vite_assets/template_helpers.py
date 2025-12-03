@@ -37,7 +37,9 @@ class ViteTemplateHelpers:
             return Markup("")
 
         dev_server = self.config.get_dev_server_host()
-        return Markup(f'<script type="module" src="{dev_server}/@vite/client"></script>')
+        return Markup(
+            f'<script type="module" src="{dev_server}/@vite/client"></script>'
+        )
 
     def vite_asset(self, path: str) -> Markup:
         """Inject Vite asset tags (script or link).
@@ -96,14 +98,20 @@ class ViteTemplateHelpers:
 
         if file_path:
             if path.endswith(".css") or file_path.endswith(".css"):
-                tags.append(f'<link rel="stylesheet" href="{static_prefix}/{file_path}">')
+                tags.append(
+                    f'<link rel="stylesheet" href="{static_prefix}/{file_path}">'
+                )
             else:
-                tags.append(f'<script type="module" src="{static_prefix}/{file_path}"></script>')
+                tags.append(
+                    f'<script type="module" src="{static_prefix}/{file_path}"></script>'
+                )
 
         # Include CSS files referenced by this chunk
         if "css" in chunk:
             for css_file in chunk["css"]:
-                tags.append(f'<link rel="stylesheet" href="{static_prefix}/{css_file}">')
+                tags.append(
+                    f'<link rel="stylesheet" href="{static_prefix}/{css_file}">'
+                )
 
         return Markup("\n    ".join(tags))
 

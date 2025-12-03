@@ -53,11 +53,11 @@ packages = ["fastapi_vite_assets"]
 
 [tool.ruff]
 target-version = "py310"
-line-length = 100
+line-length = 88
 
 [tool.ruff.lint]
 select = ["E", "F", "I"]  # Errors, Pyflakes, Isort
-ignore = []
+ignore = ["E501"]  # Ignore line-too-long (formatter handles this where possible)
 
 [tool.commitizen]
 name = "cz_conventional_commits"

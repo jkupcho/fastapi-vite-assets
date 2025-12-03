@@ -176,6 +176,7 @@ class TestViteTemplateHelpers:
 
         assert str(result) == ""
         assert any(
-            "Asset 'src/nonexistent.ts' not found" in record.message for record in caplog.records
+            "Asset 'src/nonexistent.ts' not found" in record.message
+            for record in caplog.records
         )
         assert any("vite.config.ts" in record.message for record in caplog.records)

@@ -37,7 +37,9 @@ class ViteManifest:
                 self._manifest = json.load(f)
 
             entry_count = len(self._manifest) if self._manifest else 0
-            logger.debug(f"Loaded manifest with {entry_count} entries from {self.manifest_path}")
+            logger.debug(
+                f"Loaded manifest with {entry_count} entries from {self.manifest_path}"
+            )
 
             return self._manifest
 

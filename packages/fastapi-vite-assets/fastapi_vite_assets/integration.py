@@ -93,6 +93,8 @@ def setup_vite(
                 f"Static files will not be served. Did you run 'npm run build'?"
             )
         else:
-            logger.debug(f"Assets directory not found (OK in dev mode): {config.full_assets_path}")
+            logger.debug(
+                f"Assets directory not found (OK in dev mode): {config.full_assets_path}"
+            )
 
     return helpers
