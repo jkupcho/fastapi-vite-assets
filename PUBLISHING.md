@@ -6,6 +6,30 @@ This guide explains how to publish the `fastapi-vite-assets` package to PyPI.
 
 ✅ PyPI trusted publishing is already configured for this repository.
 
+### Required GitHub Secrets
+
+For automated releases to work, you need to configure a Personal Access Token (PAT):
+
+1. **Create a PAT** (if not already created):
+   - Go to GitHub Settings → Developer settings → Personal access tokens → Fine-grained tokens
+   - Click "Generate new token"
+   - Name: `fastapi-vite-assets-releases`
+   - Expiration: Choose appropriate duration
+   - Repository access: Only select repositories → `jkupcho/fastapi-vite-assets`
+   - Permissions:
+     - Contents: Read and write
+     - Metadata: Read-only
+   - Generate token and copy it
+
+2. **Add the PAT to repository secrets**:
+   - Go to repository Settings → Secrets and variables → Actions
+   - Click "New repository secret"
+   - Name: `PAT_TOKEN`
+   - Value: Paste the PAT you created
+   - Click "Add secret"
+
+This PAT allows the release workflow to commit version bumps and push tags back to the repository.
+
 ## Publishing Workflow
 
 ### Publishing a New Release (Fully Automated) ⚡
